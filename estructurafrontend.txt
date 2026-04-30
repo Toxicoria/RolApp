@@ -1,0 +1,16 @@
+src/
+├── assets/          # Archivos estáticos: imágenes, iconos, fuentes, etc.
+├── components/      # Pedazos de interfaz reutilizables.
+│   ├── ui/          # Cosas genéricas: botones, inputs personalizados, modales.
+│   └── sheet/       # Partes específicas de la hoja: StatsColumn, CombatBlock, etc.
+├── views/           # Las pantallas completas (algunos lo llaman 'pages').
+│   └── CharacterView.tsx  # Aquí uniremos los componentes de 'sheet'.
+├── types/           # Definiciones de TypeScript.
+│   └── index.ts     # Aquí iría nuestra interfaz Character y Attributes.
+├── utils/           # Funciones lógicas sueltas.
+│   └── modifiers.ts # Ej: la fórmula matemática que calcula el +2 o -1 de un atributo.
+├── db/              # (Para el futuro cercano).
+│   └── db.ts        # Aquí configuraremos IndexedDB/Dexie.js cuando guardemos datos.
+├── App.tsx          # El cerebro visual. Más adelante aquí pondremos el enrutador (React Router).
+├── index.css        # Donde importamos Tailwind.
+└── main.tsx         # El punto de arranque de Vite/React.
