@@ -46,10 +46,22 @@ export interface Habilidad {
   alcance: string; 
 }
 
+export interface EntradaStat {
+  id: string;
+  nombre: string;
+  valor: number;
+}
+
 export interface SubItem {
     id: string;
     nombre: string;
     cantidad: number;
+}
+
+export interface ZonaTexto {
+  id: string;
+  titulo: string;
+  contenido: string;
 }
 
 export interface ItemInventario {

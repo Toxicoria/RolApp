@@ -1,47 +1,29 @@
-// src/components/sheet/AtributosPrincipales.tsx
+import ControlPildora from '../ui/ControlPildora';
 import type { Atributos } from '../../types';
-import { calcularModificador, formatearModificador } from '../../utils/modificadores';
 
 interface Props {
   datos: Atributos;
   alCambiar: (nombre: keyof Atributos, valor: number) => void;
 }
 
-// Componente para cada cajita individual
-const CajaAtributo = ({ etiqueta, nombre, valor, alCambiar }: { etiqueta: string, nombre: keyof Atributos, valor: number, alCambiar: (n: keyof Atributos, v: number) => void }) => {
-  const modificador = calcularModificador(valor);
-
-  return (
-    <div className="flex flex-col items-center w-24 bg-white border-2 border-gray-300 rounded-lg shadow-sm pb-2 pt-3 relative">
-      <span className="text-[10px] font-bold text-gray-700 uppercase mb-1">{etiqueta}</span>
-      
-      {/* El modificador calculado (Número grande) */}
-      <span className="text-3xl font-bold text-gray-800 mb-3">
-        {formatearModificador(modificador)}
-      </span>
-      
-      {/* Input de la puntuación base (El óvalo abajo) */}
-      <div className="absolute -bottom-3 bg-white border-2 border-gray-300 rounded-full w-12 h-8 flex items-center justify-center overflow-hidden focus-within:border-blue-500 transition-colors">
-        <input 
-          type="number" 
-          value={valor || ''} 
-          onChange={(e) => alCambiar(nombre, parseInt(e.target.value) || 0)}
-          className="w-full text-center text-sm font-bold outline-none bg-transparent"
-        />
-      </div>
-    </div>
-  );
-};
+const calcularModificador = (puntuacion: number) => Math.floor((puntuacion - 10) / 2);
+const formatearModificador = (mod: number) => (mod >= 0 ? `+${mod}` : `${mod}`);
 
 export default function AtributosPrincipales({ datos, alCambiar }: Props) {
   return (
-    <div className="flex flex-wrap justify-center gap-y-6 gap-x-4 md:flex-col md:w-fit py-4">
-      <CajaAtributo etiqueta="Fuerza" nombre="fuerza" valor={datos.fuerza} alCambiar={alCambiar} />
-      <CajaAtributo etiqueta="Destreza" nombre="destreza" valor={datos.destreza} alCambiar={alCambiar} />
-      <CajaAtributo etiqueta="Constitución" nombre="constitucion" valor={datos.constitucion} alCambiar={alCambiar} />
-      <CajaAtributo etiqueta="Inteligencia" nombre="inteligencia" valor={datos.inteligencia} alCambiar={alCambiar} />
-      <CajaAtributo etiqueta="Sabiduría" nombre="sabiduria" valor={datos.sabiduria} alCambiar={alCambiar} />
-      <CajaAtributo etiqueta="Carisma" nombre="carisma" valor={datos.carisma} alCambiar={alCambiar} />
+    <div className="grid grid-cols-2 gap-2 md:gap-3">
+      {Object.keys(datos).map((attr) => {
+        const nombre = attr as keyof Atributos;
+        const valor = datos[nombre];
+        const mod = calcularModificador(valor);
+        return (
+          <div key={nombre} className="flex flex-col items-center w-full bg-white border border-slate-200 rounded-xl shadow-sm pb-2 pt-2 relative group hover:border-blue-300 transition-all">
+            <span className="text-[7px] md:text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">{nombre.substring(0, 3)}</span>
+            <span className="text-lg md:text-2xl font-black text-slate-800 mb-1">{formatearModificador(mod)}</span>
+            <ControlPildora valor={valor} alCambiar={(v) => alCambiar(nombre, v)} min={1} className="scale-75 origin-center" />
+          </div>
+        );
+      })}
     </div>
   );
 }

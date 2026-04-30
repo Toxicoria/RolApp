@@ -1,4 +1,5 @@
-// src/components/sheet/CabeceraPersonaje.tsx
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import type { ChangeEvent } from 'react';
 import type { DatosCabecera } from '../../types';
 
@@ -23,33 +24,68 @@ const EntradaCabecera = ({ etiqueta, nombre, valor, alCambiar, tipo = "text" }: 
 );
 
 export default function CabeceraPersonaje({ datos, alCambiar }: Props) {
+  const [expandida, setExpandida] = useState(false);
+
   return (
-    <div className="bg-white p-6 rounded-md shadow-sm border border-gray-200 flex flex-col md:flex-row gap-6">
-      
-      {/* Bloque del Nombre */}
-      <div className="flex-1 md:max-w-sm flex flex-col-reverse justify-end">
-        <input 
-          type="text" 
+    <div className="bg-white rounded-md shadow-sm border border-gray-200 overflow-hidden">
+
+      {/* Barra siempre visible */}
+      <div
+        className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+        onClick={() => setExpandida(!expandida)}
+      >
+        <input
+          type="text"
           name="nombre"
           value={datos.nombre}
           onChange={alCambiar}
-          className="w-full text-3xl font-bold bg-transparent outline-none border-b-2 border-gray-400 focus:border-blue-500 pb-1 transition-colors"
-          placeholder="Ej. Gandalf"
+          onClick={(e) => e.stopPropagation()}
+          placeholder="Nombre del personaje..."
+          className="flex-1 text-lg font-bold bg-transparent outline-none text-gray-800 placeholder:text-gray-300 min-w-0"
         />
-        <label className="text-xs font-bold text-gray-500 uppercase group-focus-within:text-blue-500 mb-1">
-          Nombre del Personaje
-        </label>
+
+        <div className="flex items-center gap-4 shrink-0">
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] font-bold text-gray-400 uppercase">Niv.</span>
+            <input
+              type="number"
+              name="nivel"
+              value={datos.nivel}
+              onChange={alCambiar}
+              onClick={(e) => e.stopPropagation()}
+              className="w-8 text-center font-bold text-gray-700 bg-transparent outline-none border-b border-gray-200 focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] font-bold text-gray-400 uppercase">XP</span>
+            <input
+              type="number"
+              name="experiencia"
+              value={datos.experiencia}
+              onChange={alCambiar}
+              onClick={(e) => e.stopPropagation()}
+              className="w-16 text-center font-bold text-gray-700 bg-transparent outline-none border-b border-gray-200 focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+          </div>
+        </div>
+
+        <ChevronDown
+          size={16}
+          className={`text-gray-400 transition-transform duration-200 shrink-0 ${expandida ? 'rotate-180' : ''}`}
+        />
       </div>
 
-      {/* Bloque de Detalles */}
-      <div className="flex-[2] grid grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4 bg-gray-50 p-4 rounded border border-gray-100">
-        <EntradaCabecera etiqueta="Clase" nombre="clase" valor={datos.clase} alCambiar={alCambiar} />
-        <EntradaCabecera etiqueta="Subclase" nombre="subclase" valor={datos.subclase} alCambiar={alCambiar} />
-        <EntradaCabecera etiqueta="Nivel" nombre="nivel" valor={datos.nivel} alCambiar={alCambiar} tipo="number" />
-        <EntradaCabecera etiqueta="Raza" nombre="raza" valor={datos.raza} alCambiar={alCambiar} />
-        <EntradaCabecera etiqueta="Trasfondo" nombre="trasfondo" valor={datos.trasfondo} alCambiar={alCambiar} />
-        <EntradaCabecera etiqueta="Experiencia" nombre="experiencia" valor={datos.experiencia} alCambiar={alCambiar} tipo="number" />
-      </div>
+      {/* Detalles desplegables */}
+      {expandida && (
+        <div className="px-4 pb-4 pt-2 border-t border-gray-100">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 bg-gray-50 p-4 rounded border border-gray-100">
+            <EntradaCabecera etiqueta="Clase"      nombre="clase"      valor={datos.clase}      alCambiar={alCambiar} />
+            <EntradaCabecera etiqueta="Subclase"   nombre="subclase"   valor={datos.subclase}   alCambiar={alCambiar} />
+            <EntradaCabecera etiqueta="Raza"       nombre="raza"       valor={datos.raza}       alCambiar={alCambiar} />
+            <EntradaCabecera etiqueta="Trasfondo"  nombre="trasfondo"  valor={datos.trasfondo}  alCambiar={alCambiar} />
+          </div>
+        </div>
+      )}
 
     </div>
   );

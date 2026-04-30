@@ -1,175 +1,102 @@
-// src/views/VistaPersonaje.tsx
-import { useState, type ChangeEvent } from 'react';
 import CabeceraPersonaje from '../components/sheet/CabeceraPersonaje';
 import AtributosPrincipales from '../components/sheet/AtributosPrincipales';
 import EstadisticasCombate from '../components/sheet/EstadisticasCombate';
-import ListaHabilidades from '../components/sheet/ListaHailidades';
+import TiradasSalvacion from '../components/sheet/TiradasSalvacion';
+import HabilidadesPersonaje from '../components/sheet/HabilidadesPersonaje';
+import ListaHabilidades from '../components/sheet/ListaHabilidades';
 import Inventario from '../components/sheet/Inventario';
-import { 
-  type DatosCabecera, 
-  type Atributos, 
-  type EstadisticasCombate as TipoCombate, 
-  type Habilidad, 
-  type ItemInventario,
-  type SubItem,
-  FormaArea 
-} from '../types';
+import { usePersonaje } from '../hooks/usePersonaje';
 
 export default function VistaPersonaje() {
-  // --- ESTADOS ---
-
-  const [datosCabecera, setDatosCabecera] = useState<DatosCabecera>({
-    nombre: '', trasfondo: '', clase: '', subclase: '', raza: '', nivel: 1, experiencia: 0,
-  });
-
-  const [atributos, setAtributos] = useState<Atributos>({
-    fuerza: 10, destreza: 10, constitucion: 10, inteligencia: 10, sabiduria: 10, carisma: 10,
-  });
-
-  const [combate, setCombate] = useState<TipoCombate>({
-    ca: 10, iniciativa: 0, velocidad: 9, vidaMaxima: 10, vidaActual: 10, vidaTemporal: 0
-  });
-
-  const [habilidades, setHabilidades] = useState<Habilidad[]>([]);
-  
-  const [inventario, setInventario] = useState<ItemInventario[]>([]);
-
-  // --- MANEJADORES DE CABECERA, ATRIBUTOS Y COMBATE ---
-
-  const manejarCambioCabecera = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setDatosCabecera((prev: DatosCabecera) => ({ 
-      ...prev, [name]: name === 'nivel' || name === 'experiencia' ? Number(value) : value 
-    }));
-  };
-
-  const manejarCambioAtributo = (nombre: keyof Atributos, valor: number) => {
-    setAtributos((prev: Atributos) => ({ ...prev, [nombre]: valor }));
-  };
-
-  const manejarCambioCombate = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setCombate((prev: TipoCombate) => ({ ...prev, [name]: Number(value) }));
-  };
-
-  // --- MANEJADORES DE HABILIDADES ---
-
-  const agregarHabilidad = () => {
-    const nueva: Habilidad = { 
-      id: crypto.randomUUID(), 
-      nombre: '', 
-      valor: 0, 
-      descripcion: '', 
-      forma: FormaArea.UNICO, 
-      alcance: '' 
-    };
-    setHabilidades([...habilidades, nueva]);
-  };
-
-  const eliminarHabilidad = (id: string) => {
-    setHabilidades(habilidades.filter(h => h.id !== id));
-  };
-
-  const cambiarHabilidad = (id: string, campo: keyof Habilidad, valor: string | number) => {
-    setHabilidades(habilidades.map(h => h.id === id ? { ...h, [campo]: valor } : h));
-  };
-
-  // --- MANEJADORES DE INVENTARIO ---
-
-  const agregarItem = () => {
-    const nuevo: ItemInventario = {
-      id: crypto.randomUUID(),
-      nombre: '',
-      cantidad: 1,
-      peso: 0,
-      esContenedor: false,
-      contenido: [],
-      descripcion: ''
-    };
-    setInventario([...inventario, nuevo]);
-  };
-
-  const eliminarItem = (id: string) => setInventario(inventario.filter(i => i.id !== id));
-
-  const cambiarItem = (id: string, campo: keyof ItemInventario, valor: string | number | boolean) => {
-    setInventario((prev: ItemInventario[]) => prev.map(item => 
-      item.id === id ? { ...item, [campo]: valor } : item
-    ));
-  };
-
-  const agregarSubItem = (parentId: string) => {
-    setInventario((prev: ItemInventario[]) => prev.map(item => {
-      if (item.id === parentId) {
-        const nuevoSub: SubItem = { id: crypto.randomUUID(), nombre: '', cantidad: 1 };
-        return { ...item, contenido: [...(item.contenido || []), nuevoSub] };
-      }
-      return item;
-    }));
-  };
-
-  const cambiarSubItem = (parentId: string, subId: string, campo: keyof SubItem, valor: string | number) => {
-    setInventario((prev: ItemInventario[]) => prev.map(item => {
-      if (item.id === parentId) {
-        return {
-          ...item,
-          contenido: item.contenido?.map(sub => sub.id === subId ? { ...sub, [campo]: valor } : sub)
-        };
-      }
-      return item;
-    }));
-  };
-
-  const eliminarSubItem = (parentId: string, subId: string) => {
-    setInventario((prev: ItemInventario[]) => prev.map(item => {
-      if (item.id === parentId) {
-        return { ...item, contenido: item.contenido?.filter(sub => sub.id !== subId) };
-      }
-      return item;
-    }));
-  };
-
-  // --- RENDER ---
+  const { states, actions } = usePersonaje();
 
   return (
-    <div className="min-h-screen bg-gray-200 p-4 md:p-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-6">
-        
-        {/* FILA 1: DATOS GENERALES */}
-        <CabeceraPersonaje datos={datosCabecera} alCambiar={manejarCambioCabecera} />
-        
-        {/* FILA 2: CUERPO DE LA FICHA */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-          
-          {/* COLUMNA IZQUIERDA: ATRIBUTOS (2/12) */}
-          <div className="md:col-span-2 flex justify-center md:justify-start">
-            <AtributosPrincipales datos={atributos} alCambiar={manejarCambioAtributo} />
+    <div className="h-screen flex flex-col bg-slate-100 p-2 md:p-4 gap-3 font-sans selection:bg-blue-100 overflow-hidden">
+
+      {/* Cabecera */}
+      <div className="flex-none">
+        <CabeceraPersonaje datos={states.datosCabecera} alCambiar={actions.manejarCambioCabecera} />
+      </div>
+
+      {/* Cuerpo principal */}
+      <div className="flex-1 flex flex-row gap-3 min-h-0">
+
+        {/* Columna izquierda: Atributos + Tiradas + Habilidades de personaje */}
+        <aside className="flex-none w-[120px] md:w-[172px] flex flex-col gap-3 overflow-y-auto overflow-x-hidden min-h-0 pr-0.5 no-scrollbar">
+          <AtributosPrincipales datos={states.atributos} alCambiar={actions.manejarCambioAtributo} />
+          <TiradasSalvacion
+            tiradas={states.tiradas}
+            alCambiar={actions.cambiarTirada}
+            alAgregar={actions.agregarTirada}
+            alEliminar={actions.eliminarTirada}
+          />
+          <HabilidadesPersonaje
+            habilidades={states.skillsPersonaje}
+            alCambiar={actions.cambiarSkill}
+            alAgregar={actions.agregarSkill}
+            alEliminar={actions.eliminarSkill}
+          />
+        </aside>
+
+        {/* Columna central: Stats de combate + Zonas + Notas */}
+        <div className="flex-1 flex flex-col gap-3 min-h-0">
+          <div className="flex-none">
+            <EstadisticasCombate datos={states.combate} alActualizarValor={actions.actualizarValorCombate} />
           </div>
 
-          {/* COLUMNA CENTRAL: COMBATE Y HABILIDADES (5/12) */}
-          <div className="md:col-span-5 space-y-6">
-            <EstadisticasCombate datos={combate} alCambiar={manejarCambioCombate} />
-            <ListaHabilidades 
-              habilidades={habilidades} 
-              alAgregar={agregarHabilidad} 
-              alEliminar={eliminarHabilidad} 
-              alCambiar={cambiarHabilidad} 
-            />
-          </div>
+          <div className="flex-1 flex flex-col gap-3 min-h-0 overflow-y-auto no-scrollbar">
+            {/* Separador de sección */}
+            <div className="flex items-center gap-2 flex-none">
+              <span className="text-[10px] font-black uppercase text-slate-400 tracking-tighter whitespace-nowrap">Notas</span>
+              <div className="flex-1 h-px bg-slate-200" />
+              <button onClick={actions.agregarZona} className="btn-add" title="Añadir zona de texto">+</button>
+            </div>
 
-          {/* COLUMNA DERECHA: INVENTARIO (5/12) */}
-          <div className="md:col-span-5">
-            <Inventario 
-              items={inventario}
-              alAgregarItem={agregarItem}
-              alEliminarItem={eliminarItem}
-              alCambiarItem={cambiarItem}
-              alAgregarSubItem={agregarSubItem}
-              alCambiarSubItem={cambiarSubItem}
-              alEliminarSubItem={eliminarSubItem}
-            />
+            {/* Zonas de texto */}
+            {states.zonas.map(zona => (
+              <div key={zona.id} className="sheet-card flex-none flex flex-col">
+                <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-slate-100">
+                  <input
+                    value={zona.titulo}
+                    onChange={(e) => actions.cambiarZona(zona.id, 'titulo', e.target.value)}
+                    placeholder="Título..."
+                    className="text-[10px] font-black uppercase text-slate-500 tracking-tighter bg-transparent outline-none flex-1 min-w-0"
+                  />
+                  <button
+                    onClick={() => actions.eliminarZona(zona.id)}
+                    className="text-slate-200 hover:text-red-400 transition-colors text-xs ml-2 shrink-0"
+                  >✕</button>
+                </div>
+                <textarea
+                  value={zona.contenido}
+                  onChange={(e) => actions.cambiarZona(zona.id, 'contenido', e.target.value)}
+                  placeholder="Escribe aquí..."
+                  className="w-full p-4 text-sm text-slate-700 bg-transparent outline-none resize-none min-h-28"
+                />
+              </div>
+            ))}
           </div>
-
         </div>
+
+        {/* Columna derecha: Conjuros/Acciones + Inventario */}
+        <div className="flex-none w-72 md:w-80 flex flex-col gap-3 overflow-y-auto min-h-0">
+          <ListaHabilidades
+            habilidades={states.habilidades}
+            alCambiar={actions.cambiarHabilidad}
+            alAgregar={actions.agregarHabilidad}
+            alEliminar={actions.eliminarHabilidad}
+          />
+          <Inventario
+            items={states.inventario}
+            alCambiarItem={actions.cambiarItem}
+            alAgregarItem={actions.agregarItem}
+            alEliminarItem={actions.eliminarItem}
+            alAgregarSubItem={actions.agregarSubItem}
+            alCambiarSubItem={actions.cambiarSubItem}
+            alEliminarSubItem={actions.eliminarSubItem}
+          />
+        </div>
+
       </div>
     </div>
   );
