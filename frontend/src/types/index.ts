@@ -17,6 +17,23 @@ export interface Atributos{
     carisma: number;
 }
 
+export type AtributoKey = keyof Atributos;
+
+export interface EntradaSalvacion {
+  id: string;
+  nombre: string;
+  atributo: AtributoKey;
+  competencia: boolean;
+}
+
+export interface EntradaHabilidad {
+  id: string;
+  nombre: string;
+  atributo: AtributoKey;
+  competencia: boolean;
+  experiencia: boolean;
+}
+
 export interface EstadisticasCombate {
   ca: number;          // Clase de Armadura
   iniciativa: number;

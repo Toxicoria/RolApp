@@ -5,3 +5,7 @@ export const calcularModificador = (puntuacion: number): number => {
 export const formatearModificador = (modificador: number): string  => {
     return modificador > 0 ? `+${modificador}` : `${modificador}` ;
 }
+
+export const calcularBonoCompetencia = (nivel: number): number => {
+    return Math.ceil(nivel / 4) + 1;
+}

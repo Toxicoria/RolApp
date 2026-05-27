@@ -4,27 +4,51 @@ import { FormaArea } from '../types';
 import type {
   DatosCabecera,
   Atributos,
+  AtributoKey,
   EstadisticasCombate,
-  EntradaStat,
+  EntradaSalvacion,
+  EntradaHabilidad,
   Habilidad,
   ItemInventario,
   SubItem,
   ZonaTexto
 } from '../types';
 
-const nuevaEntrada = (nombre = ''): EntradaStat => ({
-  id: crypto.randomUUID(), nombre, valor: 0
+const nuevaTirada = (nombre: string, atributo: AtributoKey): EntradaSalvacion => ({
+  id: crypto.randomUUID(), nombre, atributo, competencia: false,
 });
 
-const TIRADAS_DEFAULT: EntradaStat[] = [
-  'Fuerza', 'Destreza', 'Constitución', 'Inteligencia', 'Sabiduría', 'Carisma'
-].map(n => nuevaEntrada(n));
+const nuevaHabilidad = (nombre: string, atributo: AtributoKey): EntradaHabilidad => ({
+  id: crypto.randomUUID(), nombre, atributo, competencia: false, experiencia: false,
+});
 
-const HABILIDADES_DEFAULT: EntradaStat[] = [
-  'Acrobacias', 'Adiestramiento', 'Arcanos', 'Atletismo', 'Engaño',
-  'Historia', 'Intimidación', 'Juego de Manos', 'Medicina', 'Naturaleza',
-  'Percepción', 'Perspicacia', 'Persuasión', 'Religión', 'Sigilo', 'Supervivencia'
-].map(n => nuevaEntrada(n));
+const TIRADAS_DEFAULT: EntradaSalvacion[] = [
+  nuevaTirada('Fuerza', 'fuerza'),
+  nuevaTirada('Destreza', 'destreza'),
+  nuevaTirada('Constitución', 'constitucion'),
+  nuevaTirada('Inteligencia', 'inteligencia'),
+  nuevaTirada('Sabiduría', 'sabiduria'),
+  nuevaTirada('Carisma', 'carisma'),
+];
+
+const HABILIDADES_DEFAULT: EntradaHabilidad[] = [
+  nuevaHabilidad('Acrobacias', 'destreza'),
+  nuevaHabilidad('Adiestramiento', 'sabiduria'),
+  nuevaHabilidad('Arcanos', 'inteligencia'),
+  nuevaHabilidad('Atletismo', 'fuerza'),
+  nuevaHabilidad('Engaño', 'carisma'),
+  nuevaHabilidad('Historia', 'inteligencia'),
+  nuevaHabilidad('Intimidación', 'carisma'),
+  nuevaHabilidad('Juego de Manos', 'destreza'),
+  nuevaHabilidad('Medicina', 'sabiduria'),
+  nuevaHabilidad('Naturaleza', 'inteligencia'),
+  nuevaHabilidad('Percepción', 'sabiduria'),
+  nuevaHabilidad('Perspicacia', 'sabiduria'),
+  nuevaHabilidad('Persuasión', 'carisma'),
+  nuevaHabilidad('Religión', 'inteligencia'),
+  nuevaHabilidad('Sigilo', 'destreza'),
+  nuevaHabilidad('Supervivencia', 'sabiduria'),
+];
 
 export const usePersonaje = () => {
   const [datosCabecera, setDatosCabecera] = useState<DatosCabecera>({
@@ -39,8 +63,8 @@ export const usePersonaje = () => {
     ca: 10, iniciativa: 0, velocidad: 9, vidaMaxima: 10, vidaActual: 10, vidaTemporal: 0
   });
 
-  const [tiradas, setTiradas] = useState<EntradaStat[]>(TIRADAS_DEFAULT);
-  const [skillsPersonaje, setSkillsPersonaje] = useState<EntradaStat[]>(HABILIDADES_DEFAULT);
+  const [tiradas, setTiradas] = useState<EntradaSalvacion[]>(TIRADAS_DEFAULT);
+  const [skillsPersonaje, setSkillsPersonaje] = useState<EntradaHabilidad[]>(HABILIDADES_DEFAULT);
   const [habilidades, setHabilidades] = useState<Habilidad[]>([]);
   const [inventario, setInventario] = useState<ItemInventario[]>([]);
   const [zonas, setZonas] = useState<ZonaTexto[]>([]);
@@ -62,16 +86,35 @@ export const usePersonaje = () => {
   };
 
   // --- TIRADAS DE SALVACIÓN ---
-  const agregarTirada = () => setTiradas(prev => [...prev, nuevaEntrada()]);
-  const eliminarTirada = (id: string) => setTiradas(prev => prev.filter(t => t.id !== id));
-  const cambiarTirada = (id: string, campo: keyof EntradaStat, valor: string | number) =>
+  const agregarTirada = () =>
+    setTiradas(prev => [...prev, nuevaTirada('', 'fuerza')]);
+
+  const eliminarTirada = (id: string) =>
+    setTiradas(prev => prev.filter(t => t.id !== id));
+
+  const cambiarTirada = (id: string, campo: 'nombre' | 'atributo', valor: string) =>
     setTiradas(prev => prev.map(t => t.id === id ? { ...t, [campo]: valor } : t));
 
+  const toggleCompetenciaTirada = (id: string) =>
+    setTiradas(prev => prev.map(t => t.id === id ? { ...t, competencia: !t.competencia } : t));
+
   // --- SKILLS / HABILIDADES DE PERSONAJE ---
-  const agregarSkill = () => setSkillsPersonaje(prev => [...prev, nuevaEntrada()]);
-  const eliminarSkill = (id: string) => setSkillsPersonaje(prev => prev.filter(s => s.id !== id));
-  const cambiarSkill = (id: string, campo: keyof EntradaStat, valor: string | number) =>
+  const agregarSkill = () =>
+    setSkillsPersonaje(prev => [...prev, nuevaHabilidad('', 'fuerza')]);
+
+  const eliminarSkill = (id: string) =>
+    setSkillsPersonaje(prev => prev.filter(s => s.id !== id));
+
+  const cambiarSkill = (id: string, campo: 'nombre' | 'atributo', valor: string) =>
     setSkillsPersonaje(prev => prev.map(s => s.id === id ? { ...s, [campo]: valor } : s));
+
+  const ciclarCompetenciaSkill = (id: string) =>
+    setSkillsPersonaje(prev => prev.map(s => {
+      if (s.id !== id) return s;
+      if (!s.competencia) return { ...s, competencia: true, experiencia: false };
+      if (!s.experiencia) return { ...s, experiencia: true };
+      return { ...s, competencia: false, experiencia: false };
+    }));
 
   // --- ACCIONES DE HABILIDADES (conjuros/acciones) ---
   const agregarHabilidad = () => {
@@ -142,8 +185,8 @@ export const usePersonaje = () => {
     states: { datosCabecera, atributos, combate, tiradas, skillsPersonaje, habilidades, inventario, zonas },
     actions: {
       manejarCambioCabecera, manejarCambioAtributo, actualizarValorCombate,
-      agregarTirada, eliminarTirada, cambiarTirada,
-      agregarSkill, eliminarSkill, cambiarSkill,
+      agregarTirada, eliminarTirada, cambiarTirada, toggleCompetenciaTirada,
+      agregarSkill, eliminarSkill, cambiarSkill, ciclarCompetenciaSkill,
       agregarHabilidad, eliminarHabilidad, cambiarHabilidad,
       agregarItem, eliminarItem, cambiarItem,
       agregarSubItem, cambiarSubItem, eliminarSubItem,

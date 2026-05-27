@@ -109,6 +109,96 @@ code {
   background: var(--code-bg);
 }
 
+/* Invisible but interactive resize hotspots — opacity hides the SVG arrow image */
+.react-resizable-handle {
+  opacity: 0 !important;
+  z-index: 2;
+}
+.react-resizable-handle-e {
+  top: 4px !important; bottom: 4px !important; right: 0 !important;
+  width: 8px !important; height: auto !important;
+  transform: none !important; cursor: ew-resize !important;
+}
+.react-resizable-handle-w {
+  top: 4px !important; bottom: 4px !important; left: 0 !important;
+  width: 8px !important; height: auto !important;
+  transform: none !important; cursor: ew-resize !important;
+}
+.react-resizable-handle-s {
+  left: 4px !important; right: 4px !important; bottom: 0 !important;
+  width: auto !important; height: 8px !important;
+  transform: none !important; cursor: ns-resize !important;
+}
+.react-resizable-handle-se {
+  right: 0 !important; bottom: 0 !important;
+  width: 14px !important; height: 14px !important;
+  transform: none !important; cursor: se-resize !important;
+}
+.react-resizable-handle-sw {
+  left: 0 !important; bottom: 0 !important;
+  width: 14px !important; height: 14px !important;
+  transform: none !important; cursor: sw-resize !important;
+}
+
+/* Clip pseudo-elements to the card's rounded corners */
+.react-grid-item {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Edge glow: ::before = left/right, ::after = bottom */
+.react-grid-item::before,
+.react-grid-item::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s;
+  z-index: 3;
+}
+
+/* Right edge */
+.react-grid-item:has(.react-resizable-handle-e:hover)::before,
+.react-grid-item:has(.react-resizable-handle-se:hover)::before {
+  inset: 0 0 0 auto;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, #3b82f6 20%, #3b82f6 80%, transparent);
+  opacity: 1;
+}
+
+/* Left edge */
+.react-grid-item:has(.react-resizable-handle-w:hover)::before,
+.react-grid-item:has(.react-resizable-handle-sw:hover)::before {
+  inset: 0 auto 0 0;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, #3b82f6 20%, #3b82f6 80%, transparent);
+  opacity: 1;
+}
+
+/* Bottom edge */
+.react-grid-item:has(.react-resizable-handle-s:hover)::after,
+.react-grid-item:has(.react-resizable-handle-se:hover)::after,
+.react-grid-item:has(.react-resizable-handle-sw:hover)::after {
+  inset: auto 0 0 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, #3b82f6 20%, #3b82f6 80%, transparent);
+  opacity: 1;
+}
+
+/* Active resize */
+.react-grid-item.react-resizable-resizing {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.45);
+}
+.react-grid-item.react-draggable-dragging {
+  opacity: 0.85;
+  z-index: 100;
+}
+.react-grid-item.react-grid-placeholder {
+  background: #3b82f6 !important;
+  opacity: 0.12 !important;
+  border-radius: 12px;
+}
+
 @layer components {
   .no-scrollbar {
     scrollbar-width: none;

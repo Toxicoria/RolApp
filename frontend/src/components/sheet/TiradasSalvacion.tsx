@@ -1,34 +1,47 @@
-import type { EntradaStat } from '../../types';
+import type { Atributos, AtributoKey, EntradaSalvacion } from '../../types';
+import { calcularModificador, formatearModificador, calcularBonoCompetencia } from '../../utils/modificadores';
+
+const ABREV: Record<AtributoKey, string> = {
+  fuerza: 'FUE', destreza: 'DES', constitucion: 'CON',
+  inteligencia: 'INT', sabiduria: 'SAB', carisma: 'CAR',
+};
+const ATRIBUTOS: AtributoKey[] = ['fuerza', 'destreza', 'constitucion', 'inteligencia', 'sabiduria', 'carisma'];
 
 interface Props {
-  tiradas: EntradaStat[];
-  alCambiar: (id: string, campo: keyof EntradaStat, valor: string | number) => void;
-  alAgregar: () => void;
+  tiradas: EntradaSalvacion[];
+  atributos: Atributos;
+  nivel: number;
+  alCambiar: (id: string, campo: 'nombre' | 'atributo', valor: string) => void;
+  alToggleCompetencia: (id: string) => void;
   alEliminar: (id: string) => void;
 }
 
-export default function TiradasSalvacion({ tiradas, alCambiar, alAgregar, alEliminar }: Props) {
+export default function TiradasSalvacion({ tiradas, atributos, nivel, alCambiar, alToggleCompetencia, alEliminar }: Props) {
+  const bono = calcularBonoCompetencia(nivel);
   return (
-    <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden shrink-0">
-      <div className="flex items-center justify-between px-3 py-2 border-b border-slate-100">
-        <span className="text-[9px] font-black uppercase text-slate-400 tracking-wide truncate min-w-0" title="Tiradas de Salvación">Tiradas de Salvación</span>
-        <button onClick={alAgregar} className="btn-add" title="Añadir tirada">+</button>
-      </div>
-
-      <div className="flex flex-col divide-y divide-slate-50">
-        {tiradas.map((t) => (
+    <div className="flex flex-col divide-y divide-slate-50 overflow-y-auto no-scrollbar h-full">
+      {tiradas.map((t) => {
+        const mod = calcularModificador(atributos[t.atributo]);
+        const valor = mod + (t.competencia ? bono : 0);
+        return (
           <div key={t.id} className="flex items-center gap-1.5 px-2 py-1 group hover:bg-slate-50">
-            <input
-              type="number"
-              value={t.valor}
-              onChange={(e) => alCambiar(t.id, 'valor', parseInt(e.target.value) || 0)}
-              className="w-8 text-center text-xs font-bold text-blue-600 bg-slate-50 border border-slate-200 rounded outline-none focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            <button
+              onClick={() => alToggleCompetencia(t.id)}
+              title={t.competencia ? 'Quitar competencia' : 'Añadir competencia'}
+              className={`w-3 h-3 rounded-full border-2 flex-shrink-0 transition-colors ${t.competencia ? 'bg-blue-500 border-blue-500' : 'border-slate-300'}`}
             />
+            <span className="w-6 text-center text-xs font-bold text-blue-600 flex-shrink-0">
+              {formatearModificador(valor)}
+            </span>
+            <select
+              value={t.atributo}
+              onChange={(e) => alCambiar(t.id, 'atributo', e.target.value)}
+              className="text-[8px] font-bold text-slate-400 uppercase bg-transparent border-0 outline-none cursor-pointer w-7 flex-shrink-0 text-center"
+            >
+              {ATRIBUTOS.map(k => <option key={k} value={k}>{ABREV[k]}</option>)}
+            </select>
             <input
-              type="text"
-              value={t.nombre}
-              placeholder="Nombre..."
-              title={t.nombre}
+              type="text" value={t.nombre} placeholder="Nombre..." title={t.nombre}
               onChange={(e) => alCambiar(t.id, 'nombre', e.target.value)}
               className="flex-1 text-xs text-slate-700 bg-transparent outline-none min-w-0 truncate"
             />
@@ -37,8 +50,8 @@ export default function TiradasSalvacion({ tiradas, alCambiar, alAgregar, alElim
               className="text-slate-200 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity text-xs shrink-0"
             >✕</button>
           </div>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 }
