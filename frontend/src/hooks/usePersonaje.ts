@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ChangeEvent } from 'react';
-import { FormaArea } from '../types';
+
 import type {
   DatosCabecera,
   Atributos,
@@ -116,11 +116,9 @@ export const usePersonaje = () => {
       return { ...s, competencia: false, experiencia: false };
     }));
 
-  // --- ACCIONES DE HABILIDADES (conjuros/acciones) ---
-  const agregarHabilidad = () => {
+  const agregarHabilidad = (nueva: Omit<Habilidad, 'id'>) => {
     setHabilidades([...habilidades, {
-      id: crypto.randomUUID(), nombre: '', valor: 0, descripcion: '',
-      forma: FormaArea.UNICO, alcance: ''
+      id: crypto.randomUUID(), ...nueva
     }]);
   };
 
@@ -137,10 +135,11 @@ export const usePersonaje = () => {
     setZonas(prev => prev.map(z => z.id === id ? { ...z, [campo]: valor } : z));
 
   // --- ACCIONES DE INVENTARIO ---
-  const agregarItem = () => {
+  const agregarItem = (nuevo: Omit<ItemInventario, 'id' | 'contenido'>) => {
     setInventario([...inventario, {
-      id: crypto.randomUUID(), nombre: '', cantidad: 1, peso: 0,
-      esContenedor: false, contenido: [], descripcion: ''
+      id: crypto.randomUUID(),
+      contenido: nuevo.esContenedor ? [] : undefined,
+      ...nuevo
     }]);
   };
 

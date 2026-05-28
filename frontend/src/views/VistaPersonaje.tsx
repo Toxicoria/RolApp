@@ -21,6 +21,8 @@ import TiradasSalvacion from '../components/sheet/TiradasSalvacion';
 import HabilidadesPersonaje from '../components/sheet/HabilidadesPersonaje';
 import ListaHabilidades from '../components/sheet/ListaHabilidades';
 import Inventario from '../components/sheet/Inventario';
+import ModalAgregarHabilidad from '../components/sheet/ModalAgregarHabilidad';
+import ModalAgregarItem from '../components/sheet/ModalAgregarItem';
 import { usePersonaje } from '../hooks/usePersonaje';
 
 // h inicial: justo para mostrar el contenido por defecto (6 tiradas, 16 skills)
@@ -84,6 +86,9 @@ export default function VistaPersonaje() {
   const { states, actions } = usePersonaje();
   const [layout, setLayout] = useState<LayoutItem[]>(LAYOUT_INICIAL);
   const { width, containerRef } = useContainerWidth({ initialWidth: 1280 });
+
+  const [modalHabilidadAbierto, setModalHabilidadAbierto] = useState(false);
+  const [modalInventarioAbierto, setModalInventarioAbierto] = useState(false);
 
   // Estado de colapso por tarjeta
   const [collapsados, setCollapsados] = useState<Set<string>>(new Set());
@@ -230,7 +235,7 @@ export default function VistaPersonaje() {
           </div>
 
           <div key="conjuros">
-            <TarjetaGrid titulo="Habilidades y Conjuros" colapsada={col('conjuros')} onToggleColapso={() => toggleColapso('conjuros')} onAgregar={actions.agregarHabilidad}>
+            <TarjetaGrid titulo="Habilidades y Conjuros" colapsada={col('conjuros')} onToggleColapso={() => toggleColapso('conjuros')} onAgregar={() => setModalHabilidadAbierto(true)}>
               <ListaHabilidades
                 habilidades={states.habilidades}
                 alCambiar={actions.cambiarHabilidad}
@@ -240,7 +245,7 @@ export default function VistaPersonaje() {
           </div>
 
           <div key="inventario">
-            <TarjetaGrid titulo="Inventario" colapsada={col('inventario')} onToggleColapso={() => toggleColapso('inventario')} onAgregar={actions.agregarItem}>
+            <TarjetaGrid titulo="Inventario" colapsada={col('inventario')} onToggleColapso={() => toggleColapso('inventario')} onAgregar={() => setModalInventarioAbierto(true)}>
               <Inventario
                 items={states.inventario}
                 alCambiarItem={actions.cambiarItem}
@@ -254,6 +259,20 @@ export default function VistaPersonaje() {
 
         </GridLayout>
       </div>
+
+      {modalHabilidadAbierto && (
+        <ModalAgregarHabilidad
+          alCerrar={() => setModalHabilidadAbierto(false)}
+          alGuardar={actions.agregarHabilidad}
+        />
+      )}
+
+      {modalInventarioAbierto && (
+        <ModalAgregarItem
+          alCerrar={() => setModalInventarioAbierto(false)}
+          alGuardar={actions.agregarItem}
+        />
+      )}
     </div>
   );
 }
