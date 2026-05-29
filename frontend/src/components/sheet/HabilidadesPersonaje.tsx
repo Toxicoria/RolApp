@@ -14,6 +14,8 @@ interface Props {
   alCambiar: (id: string, campo: 'nombre' | 'atributo', valor: string) => void;
   alCiclarCompetencia: (id: string) => void;
   alEliminar: (id: string) => void;
+  recursos?: any[];
+  alCambiarRecurso?: (id: string, campo: 'actual' | 'maximo', valor: string | number) => void;
 }
 
 export default function HabilidadesPersonaje({ habilidades, atributos, nivel, alCambiar, alCiclarCompetencia, alEliminar }: Props) {
@@ -32,7 +34,7 @@ export default function HabilidadesPersonaje({ habilidades, atributos, nivel, al
             >
               {h.experiencia && <span className="absolute inset-[2px] rounded-full bg-white pointer-events-none" />}
             </button>
-            <span className="w-6 text-center text-xs font-bold text-blue-600 flex-shrink-0">
+            <span className="w-6 text-center text-xs md:text-sm font-black text-blue-600 flex-shrink-0">
               {formatearModificador(valor)}
             </span>
             <select
@@ -45,7 +47,7 @@ export default function HabilidadesPersonaje({ habilidades, atributos, nivel, al
             <input
               type="text" value={h.nombre} placeholder="Nombre..." title={h.nombre}
               onChange={(e) => alCambiar(h.id, 'nombre', e.target.value)}
-              className="flex-1 text-xs text-slate-700 bg-transparent outline-none min-w-0 truncate"
+              className="flex-1 text-[10px] md:text-xs font-bold text-slate-700 bg-transparent outline-none min-w-0 truncate"
             />
             <button
               onClick={() => alEliminar(h.id)}

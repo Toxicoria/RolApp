@@ -27,57 +27,59 @@ export default function CabeceraPersonaje({ datos, alCambiar }: Props) {
   const [expandida, setExpandida] = useState(false);
 
   return (
-    <div className="bg-white rounded-md shadow-sm border border-gray-200 overflow-hidden">
-
+    <div className="relative z-50">
+      
       {/* Barra siempre visible */}
-      <div
-        className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
-        onClick={() => setExpandida(!expandida)}
-      >
-        <input
-          type="text"
-          name="nombre"
-          value={datos.nombre}
-          onChange={alCambiar}
-          onClick={(e) => e.stopPropagation()}
-          placeholder="Nombre del personaje..."
-          className="flex-1 text-lg font-bold bg-transparent outline-none text-gray-800 placeholder:text-gray-300 min-w-0"
-        />
+      <div className="bg-white rounded-md shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          className="flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={() => setExpandida(!expandida)}
+        >
+          <input
+            type="text"
+            name="nombre"
+            value={datos.nombre}
+            onChange={alCambiar}
+            onClick={(e) => e.stopPropagation()}
+            placeholder="Nombre del personaje..."
+            className="flex-1 text-lg font-bold bg-transparent outline-none text-gray-800 placeholder:text-gray-300 min-w-0"
+          />
 
-        <div className="flex items-center gap-4 shrink-0">
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] font-bold text-gray-400 uppercase">Niv.</span>
-            <input
-              type="number"
-              name="nivel"
-              value={datos.nivel}
-              onChange={alCambiar}
-              onClick={(e) => e.stopPropagation()}
-              className="w-8 text-center font-bold text-gray-700 bg-transparent outline-none border-b border-gray-200 focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
+          <div className="flex items-center gap-4 shrink-0">
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-bold text-gray-400 uppercase">Niv.</span>
+              <input
+                type="number"
+                name="nivel"
+                value={datos.nivel}
+                onChange={alCambiar}
+                onClick={(e) => e.stopPropagation()}
+                className="w-8 text-center font-bold text-gray-700 bg-transparent outline-none border-b border-gray-200 focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="text-[10px] font-bold text-gray-400 uppercase">XP</span>
+              <input
+                type="number"
+                name="experiencia"
+                value={datos.experiencia}
+                onChange={alCambiar}
+                onClick={(e) => e.stopPropagation()}
+                className="w-16 text-center font-bold text-gray-700 bg-transparent outline-none border-b border-gray-200 focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] font-bold text-gray-400 uppercase">XP</span>
-            <input
-              type="number"
-              name="experiencia"
-              value={datos.experiencia}
-              onChange={alCambiar}
-              onClick={(e) => e.stopPropagation()}
-              className="w-16 text-center font-bold text-gray-700 bg-transparent outline-none border-b border-gray-200 focus:border-blue-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            />
-          </div>
+
+          <ChevronDown
+            size={16}
+            className={`text-gray-400 transition-transform duration-200 shrink-0 ${expandida ? 'rotate-180' : ''}`}
+          />
         </div>
-
-        <ChevronDown
-          size={16}
-          className={`text-gray-400 transition-transform duration-200 shrink-0 ${expandida ? 'rotate-180' : ''}`}
-        />
       </div>
 
-      {/* Detalles desplegables */}
+      {/* Detalles desplegables (Flotante) */}
       {expandida && (
-        <div className="px-4 pb-4 pt-2 border-t border-gray-100">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md shadow-xl border border-gray-200 p-4 z-50">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-4 bg-gray-50 p-4 rounded border border-gray-100">
             <EntradaCabecera etiqueta="Clase"      nombre="clase"      valor={datos.clase}      alCambiar={alCambiar} />
             <EntradaCabecera etiqueta="Subclase"   nombre="subclase"   valor={datos.subclase}   alCambiar={alCambiar} />

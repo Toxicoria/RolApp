@@ -31,11 +31,11 @@ export default function AtributosPrincipales({ datos, alCambiar }: Props) {
         const mod = calcularModificador(valor);
         return (
           <div key={attr} className="flex items-center gap-1.5 px-2 py-1.5 hover:bg-slate-50 group">
-            <Icon size={12} className={`flex-shrink-0 ${color}`} />
-            <span className="flex-1 text-[9px] font-semibold text-slate-600 min-w-0">{label}</span>
-            <div className="flex items-center gap-0.5 flex-shrink-0">
+            <Icon size={14} className={`flex-shrink-0 ${color}`} />
+            <span className="flex-1 text-[10px] md:text-xs font-bold text-slate-700 min-w-0">{label}</span>
+            <div className="flex items-center gap-1 flex-shrink-0">
               <ControlPildora valor={valor} alCambiar={v => alCambiar(attr, v)} min={1} />
-              <span className="text-[11px] font-black text-blue-600 w-6 text-right">
+              <span className="text-xs md:text-sm font-black text-blue-600 w-6 text-right">
                 {formatMod(mod)}
               </span>
             </div>

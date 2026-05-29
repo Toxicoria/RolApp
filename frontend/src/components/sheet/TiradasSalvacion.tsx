@@ -30,7 +30,7 @@ export default function TiradasSalvacion({ tiradas, atributos, nivel, alCambiar,
               title={t.competencia ? 'Quitar competencia' : 'Añadir competencia'}
               className={`w-3 h-3 rounded-full border-2 flex-shrink-0 transition-colors ${t.competencia ? 'bg-blue-500 border-blue-500' : 'border-slate-300'}`}
             />
-            <span className="w-6 text-center text-xs font-bold text-blue-600 flex-shrink-0">
+            <span className="w-6 text-center text-xs md:text-sm font-black text-blue-600 flex-shrink-0">
               {formatearModificador(valor)}
             </span>
             <select
@@ -43,7 +43,7 @@ export default function TiradasSalvacion({ tiradas, atributos, nivel, alCambiar,
             <input
               type="text" value={t.nombre} placeholder="Nombre..." title={t.nombre}
               onChange={(e) => alCambiar(t.id, 'nombre', e.target.value)}
-              className="flex-1 text-xs text-slate-700 bg-transparent outline-none min-w-0 truncate"
+              className="flex-1 text-[10px] md:text-xs font-bold text-slate-700 bg-transparent outline-none min-w-0 truncate"
             />
             <button
               onClick={() => alEliminar(t.id)}
